@@ -4,7 +4,11 @@ const jwt = require('jsonwebtoken')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const bcrypt = require('bcryptjs')
-const User = require('./models/User')
+const User = require('./models/User');
+const Todo = require('./models/Todo');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 require('dotenv').config()
 
 const app = express()
@@ -18,6 +22,8 @@ app.use(cors({
 app.use(express.json())
 app.use(cookieParser())
 const bcryptSalt = bcrypt.genSaltSync(10)
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 app.get('/test', (req, res) => {
@@ -62,6 +68,7 @@ app.get('/profile', async (req, res) => {
             const { id } = userData;
             const user = await User.findById(id);
             if (user) {
+                // console.log(user);
                 const { name, email, _id } = user;
                 res.json({ name, email, _id });
             } else {
@@ -77,6 +84,66 @@ app.get('/profile', async (req, res) => {
         // Handle case where token is missing
         res.status(401).json({ error: 'Unauthorized' });
     }
+});
+
+app.post('/post-todo', async (req, res) => {
+    const { user, work, deadline } = req.body
+    try {
+        const workToDo = await Todo.create({
+            user, work, deadline
+        })
+        res.status(201).json(workToDo)
+    } catch (error) {
+        console.error('Error creating new task:', error);
+        res.status(500).json({ error: 'Failed to add new task.', details: error });
+    }
+})
+
+app.get('/get-todo', async (req, res) => {
+    const { token } = req.cookies
+    if (token) {
+        const userData = jwt.verify(token, jwtSecret)
+        const { id } = userData
+        const userTodoTasks = await Todo.find({user: id})
+        console.log(userTodoTasks);
+        res.json(userTodoTasks)
+    } else {
+        res.status(401).json({ error: 'Unauthorized' })
+    }
+})
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        // Check if the 'uploads' directory exists, if not, create it
+        const uploadDir = path.join(__dirname, 'uploads');
+        fs.mkdir(uploadDir, { recursive: true }, (err) => {
+            if (err) {
+                return cb(err, null);
+            }
+            cb(null, uploadDir);
+        });
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
+})
+const upload = multer({ storage: storage });
+
+app.post('/upload', upload.single('file'), (req, res) => {
+    // Access the uploaded file using req.file
+    // Process the file (save to database, etc.)
+    res.send('File uploaded successfully');
+});
+
+app.get('/files', (req, res) => {
+    fs.readdir('uploads/', (err, files) => {
+        if (err) {
+            console.error('Error reading directory:', err);
+            res.status(500).json({ error: 'Failed to read directory' });
+            return;
+        }
+        res.json(files);
+    });
 });
 
 
