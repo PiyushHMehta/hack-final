@@ -25,11 +25,12 @@ app.get('/test', (req, res) => {
 })
 
 app.post('/register', async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, interests } = req.body;
+    console.log(req.body)
     try {
         const hashedPassword = bcrypt.hashSync(password, bcryptSalt);
         const userDoc = await User.create({
-            name, email, password: hashedPassword
+            name, email, password: hashedPassword, interests
         });
         res.status(201).json(userDoc);
     } catch (error) {
