@@ -16,7 +16,7 @@ export default function Register() {
         const obj = { name, email, password, interests };
         console.log("Object before sending to backend ", obj);
         await axios.post('/register', {
-            name, email, password
+            name, email, password, interests
         })
     }
 
