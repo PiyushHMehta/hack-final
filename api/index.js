@@ -54,17 +54,31 @@ app.post('/login', async (req, res) => {
     }
 })
 
-app.get('/profile', (req, res) => {
-    const { token } = req.cookies
+app.get('/profile', async (req, res) => {
+    const { token } = req.cookies;
     if (token) {
-        jwt.verify(token, jwtSecret, {}, async (err, userData) => {
-            if (err) throw err;
-            const { id } = userData
-            const { name, email, _id } = await User.findById(id)
-            res.json({ name, email, _id })
-        })
+        try {
+            const userData = jwt.verify(token, jwtSecret);
+            const { id } = userData;
+            const user = await User.findById(id);
+            if (user) {
+                const { name, email, _id } = user;
+                res.json({ name, email, _id });
+            } else {
+                // Handle case where user is not found
+                res.status(404).json({ error: 'User not found' });
+            }
+        } catch (err) {
+            // Handle JWT verification errors
+            console.error('JWT verification error:', err);
+            res.status(401).json({ error: 'Unauthorized' });
+        }
+    } else {
+        // Handle case where token is missing
+        res.status(401).json({ error: 'Unauthorized' });
     }
-})
+});
+
 
 app.post('/logout', (req, res) => {
     res.cookie('token', '').json(true)
