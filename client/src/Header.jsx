@@ -7,9 +7,7 @@ export default function Header() {
 
 	return (
 		<nav className='flex justify-between bg-blue-500 text-white -mx-4 -mt-4 p-4 items-center'>
-			<Link to={'/'}>Name & Logo</Link>
-
-			<div>Search tab</div>
+			<Link to={'/'}>Baatcheet</Link>
 
 			<Link to={user ? '/account' : '/login'}
 				className='flex items-center gap-1 border py-2 px-4 rounded-full'>

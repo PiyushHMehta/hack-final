@@ -5,6 +5,14 @@ import axios from 'axios'
 export default function GetTodo() {
     const { user } = useContext(UserContext)
     const [todoTasks, setTodoTasks] = useState([])
+
+    async function handleDelete(id) {
+        // console.log(id);
+        const res = await axios.post('/delete-Todo', { id })
+        setTodoTasks(prevTodoTasks => prevTodoTasks.filter(task => task._id !== id));
+        // console.log(res);
+    }
+    
     useEffect(() => {
         axios.get('/get-todo').then(res => {
             setTodoTasks(res.data)
@@ -24,6 +32,7 @@ export default function GetTodo() {
                     <div key={todoTask._id} className='bg-blue-400 py-2 px-4 rounded-md text-white'>
                         <p><strong>Work:</strong> {todoTask.work}</p>
                         <p><strong>Deadline:</strong> {formatDeadline(todoTask.deadline)}</p>
+                        <button onClick={(e) => handleDelete(todoTask._id)}>Delete</button>
                     </div>
                 ))
             ) : (

@@ -12,6 +12,7 @@ import PostTodo from "./pages/PostTodo"
 import GetTodo from "./pages/GetTodo"
 import FileUpload from "./pages/FileUpload"
 import FileList from "./pages/FileList"
+import SinglePreferencePage from "./pages/SinglePreferencePage"
 
 function App() {
 
@@ -32,6 +33,7 @@ function App() {
 					<Route path="/get-todo" element={<GetTodo />} />
 					<Route path="/upload-docs" element={<FileUpload />} />
 					<Route path="/get-docs" element={<FileList />} />
+					<Route path="/connect/:interest" element={<SinglePreferencePage />} />
 				</Route>
 			</Routes>
 		</UserContextProvider>

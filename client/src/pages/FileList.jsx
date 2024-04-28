@@ -22,8 +22,8 @@ export default function FileList() {
             <h2>File List</h2>
             <ul>
                 {fileList.map((fileName, index) => (
-                    <li key={index}>
-                        <a href={`/uploads/${encodeURIComponent(fileName)}`} target="_blank" rel="noopener noreferrer">{fileName}</a>
+                    <li key={index} className='text-blue-500'>
+                        <a href={axios.defaults.baseURL+`/uploads/${encodeURIComponent(fileName)}`} target="_blank" rel="noopener noreferrer">{fileName}</a>
                     </li>
                 ))}
             </ul>

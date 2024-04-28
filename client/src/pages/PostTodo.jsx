@@ -25,7 +25,7 @@ export default function PostTodo() {
             <form onSubmit={addToDoList} className='flex flex-col w-60 justify-center items-center mx-auto gap-2 mt-20'>
                 <input type="text" placeholder='work to do' name='work'
                     value={work} onChange={ev => setWork(ev.target.value)} />
-                <input type="datetime-local" name='deadline'
+                <input id='date-input' type="datetime-local" name='deadline'
                     value={deadline} onChange={(event) => {
                         setDeadline(event.target.value);
                     }} />

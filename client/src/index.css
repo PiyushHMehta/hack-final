@@ -2,11 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
-input[type='text'], input[type='email'], input[type='password'], input[type='tel'], inputinput[type='datetime-local'], button {
+input[type='text'], input[type='email'], input[type='password'], input[type='tel'], inputinput[type='datetime-local'], button, .date-input {
     @apply w-full px-4 py-2 border border-white bg-blue-400 text-white 
-    placeholder-white rounded-sm !important
+    placeholder-white rounded-md !important
 }
 
 /* button {
     @apply w-full px-4 py-2 border border-white bg-blue-400 text-white placeholder:white rounded-sm
 } */
+
+.users-container {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.scrollable-container {
+    display: flex;
+    overflow-x: auto;
+    transition: all 0.3s ease;
+}
+
+.interests-container {
+    display: flex;
+}
+
+.interests-column {
+    display: flex;
+    flex-direction: column; /* Interests displayed in a column */
+}
+
+.interest {
+    margin-bottom: 8px; /* Adjust spacing between interests */
+}

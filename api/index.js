@@ -9,6 +9,7 @@ const Todo = require('./models/Todo');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const bodyParser = require('body-parser')
 require('dotenv').config()
 
 const app = express()
@@ -21,6 +22,9 @@ app.use(cors({
 }))
 app.use(express.json())
 app.use(cookieParser())
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }))
+
 const bcryptSalt = bcrypt.genSaltSync(10)
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -104,7 +108,7 @@ app.get('/get-todo', async (req, res) => {
     if (token) {
         const userData = jwt.verify(token, jwtSecret)
         const { id } = userData
-        const userTodoTasks = await Todo.find({user: id})
+        const userTodoTasks = await Todo.find({ user: id })
         console.log(userTodoTasks);
         res.json(userTodoTasks)
     } else {
@@ -113,9 +117,9 @@ app.get('/get-todo', async (req, res) => {
 })
 
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        // Check if the 'uploads' directory exists, if not, create it
+    destination: function (req, file, cb) {        
         const uploadDir = path.join(__dirname, 'uploads');
+        // Check if the directory exists, if not, create it
         fs.mkdir(uploadDir, { recursive: true }, (err) => {
             if (err) {
                 return cb(err, null);
@@ -126,14 +130,18 @@ const storage = multer.diskStorage({
     filename: function (req, file, cb) {
         cb(null, file.originalname);
     }
-})
+});
+
+// Initialize multer with the storage configuration
 const upload = multer({ storage: storage });
 
+// Route handler for file upload
 app.post('/upload', upload.single('file'), (req, res) => {
     // Access the uploaded file using req.file
     // Process the file (save to database, etc.)
     res.send('File uploaded successfully');
 });
+
 
 app.get('/files', (req, res) => {
     fs.readdir('uploads/', (err, files) => {
@@ -146,6 +154,49 @@ app.get('/files', (req, res) => {
     });
 });
 
+app.get('/user-interests', async (req, res) => {
+    const { token } = req.cookies
+    if (token) {
+        const userData = jwt.verify(token, jwtSecret)
+        const { id } = userData
+        console.log(id);
+        const userDoc = await User.findById(id)
+        console.log(userDoc);
+        res.json(userDoc.interests)
+    } else {
+        res.status(401).json({ error: 'Unauthorized' })
+    }
+})
+
+app.post('/delete-todo', async (req, res) => {
+    console.log(req.body);
+    try {
+        const { id } = req.body;
+        const deletedDoc = await Todo.findByIdAndDelete(id);
+        console.log(deletedDoc);
+        res.json({ msg: "success" });
+    } catch (error) {
+        res.json(error);
+    }
+})
+
+app.get('/connect/:interest', async (req, res) => {
+    try {
+        const { interest } = req.params;
+        // Find users whose interests array contains the specified interest
+        const users = await User.find({ interests: { $in: [interest] } });
+        console.log(users);
+        res.json(users);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.get('/all-users', async (req, res) => {
+    const usersData = await User.find()
+    res.json(usersData)
+})
 
 app.post('/logout', (req, res) => {
     res.cookie('token', '').json(true)

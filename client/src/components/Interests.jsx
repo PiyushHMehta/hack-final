@@ -10,7 +10,7 @@ export default function InterestSelector({ setToggle, setInterests, interests })
     "Blockchain Technology",
     "Mobile App Development",
     "Game Development",
-    "UX/UI Design",
+    "UI-UX Design",
     "Digital Marketing"
   ];
 
@@ -26,18 +26,18 @@ export default function InterestSelector({ setToggle, setInterests, interests })
 
   return (
     <div>
-      <ul className='grid grid-cols-5 text-black gap-4 rounded-sm'>
+      <ul className='grid grid-cols-2 text-black gap-4 rounded-sm'>
         {academicInterests.map((interest, index) => (
           <li
             key={index}
-            className={`p-4 flex text-white gap-3 cursor-pointer ${interests.includes(interest) ? "bg-green-500" : "bg-black"}`}
+            className={`p-4 flex text-black gap-3 cursor-pointer border border-gray-200 rounded-md ${interests.includes(interest) ? "bg-green-500 text-white" : "bg-white "}`}
             onClick={() => handleClick(interest)}
           >
             {interest}
           </li>
         ))}
       </ul>
-      <button onClick={() => setToggle(true)}>Previous</button>
+      <button onClick={() => setToggle(true)} className='mt-8'>Previous</button>
     </div>
   );
 }
